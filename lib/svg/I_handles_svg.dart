@@ -17,7 +17,6 @@ class HandlesSvg extends IHandlesSvg {
       //fit: boxFit ?? BoxFit.contain,
      colorFilter: color != null && blendMode != null ? ColorFilter.mode(color, blendMode): null,
       alignment: alignment ?? Alignment.center,
-      
     );
   }
 

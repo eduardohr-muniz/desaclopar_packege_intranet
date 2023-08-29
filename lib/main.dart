@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:desaclopar_packege_intranet/image_compress/image_compress.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -47,13 +48,17 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  Uint8List? bytes;
+  Uint8List? compressImage;
   final HandleFilesFilePicker filePicker = HandleFilesFilePicker(filePicker: FilePicker.platform);
-  late final Uint8List svgBytes;
+  //late final Uint8List svgBytes;
+  //late final Uint8List imageBytes;
   final svgNetwork = 'https://s3-us-west-2.amazonaws.com/s.cdpn.io/106114/tiger.svg';
   final svgAssets = 'assets/image_svg/mdi_light_diamond.svg';
   @override
   void initState() {
-    svgBytes = File('assets/image_svg/mdi_light_diamond.svg').readAsBytesSync();
+    //svgBytes = File('assets/image_svg/mdi_light_diamond.svg').readAsBytesSync();
+    //imageBytes = File('assets/image/IMG_20230728_105424975_Copia.jpg').readAsBytesSync();
 
     super.initState();
   }
@@ -75,31 +80,45 @@ class _MyHomePageState extends State<MyHomePage> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  SizedBox(
-                    width: 300,
-                    height: 300,
-                    child: widget.handlesSvg.renderingSvgAsset(
-                      image: svgAssets,
-                      color: Colors.black,
-                      blendMode: BlendMode.srcIn,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 300,
-                    height: 300,
-                    child: widget.handlesSvg.renderingSvgMemory(
-                      bytes: svgBytes,
-                      color: Colors.black,
-                      blendMode: BlendMode.srcIn,
-                    ),
-                  ),
-                  SizedBox(
-                    width: 300,
-                    height: 300,
-                    child: widget.handlesSvg.renderingSvgNetwork(
-                      url: svgNetwork,
-                    ),
-                  ),
+                  //SizedBox(
+                  //  width: 300,
+                  //  height: 300,
+                  //  child: widget.handlesSvg.renderingSvgAsset(
+                  //    image: svgAssets,
+                  //    color: Colors.black,
+                  //    blendMode: BlendMode.srcIn,
+                  //  ),
+                  //),
+                  //SizedBox(
+                  //  width: 300,
+                  //  height: 300,
+                  //  child: widget.handlesSvg.renderingSvgMemory(
+                  //    bytes: svgBytes,
+                  //    color: Colors.black,
+                  //    blendMode: BlendMode.srcIn,
+                  //  ),
+                  //),
+                  //SizedBox(
+                  //  width: 300,
+                  //  height: 300,
+                  //  child: widget.handlesSvg.renderingSvgNetwork(
+                  //    url: svgNetwork,
+                  //  ),
+                  //),
+                  bytes != null
+                      ? SizedBox(
+                          width: 500,
+                          height: 500,
+                          child: Image.memory(bytes!),
+                        )
+                      : SizedBox(),
+                  compressImage != null
+                      ? SizedBox(
+                          width: 500,
+                          height: 500,
+                          child: Image.memory(compressImage!),
+                        )
+                      : SizedBox()
                 ],
               ),
               SizedBox(
@@ -111,11 +130,26 @@ class _MyHomePageState extends State<MyHomePage> {
                 padding: const EdgeInsets.all(15),
                 child: ElevatedButton(
                   child: Text('Validar'),
-                  onPressed: () {
-                    final bool isValid = formKey.currentState?.validate() ?? false;
-                    if (isValid) {
-                      print('========================================================');
-                    }
+                  onPressed: () async {
+                    Uint8List? response = await filePicker.getFile(fileType: FileType.image);
+
+                    setState(() {
+                       bytes = response;
+                    });
+
+
+                    Uint8List compress = await ImageCompress().compressImageBytes(bytes: bytes!);
+                    setState(() {
+                     
+                      compressImage = compress;
+                    });
+
+                   
+
+                    //final bool isValid = formKey.currentState?.validate() ?? false;
+                    //if (isValid) {
+                    //  print('========================================================');
+                    //}
                   },
                 ),
               )
